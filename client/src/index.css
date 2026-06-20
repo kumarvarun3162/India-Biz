@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-saffron-50: #fff8f5;
+  --color-saffron-100: #ffe8d9;
+  --color-saffron-200: #ffcfb0;
+  --color-saffron-500: #e8622a;
+  --color-saffron-600: #b84d18;
+  --color-saffron-700: #8f3b11;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+}
