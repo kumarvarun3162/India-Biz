@@ -1,24 +1,18 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.database import connect_db, close_db
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from app.config import settings
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    await connect_db(os.getenv("MONGODB_URI"))
+    await connect_db(settings.MONGODB_URI, settings.DB_NAME)
     yield
-    # Shutdown
     await close_db()
 
 
 app = FastAPI(
-    title="India Biz Listing API",
-    description="Backend for India Biz Listing platform",
+    title=settings.APP_NAME,
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -26,9 +20,9 @@ app = FastAPI(
 
 @app.get("/")
 async def root():
-    return {"message": "India Biz Listing API is running", "status": "ok"}
+    return {"message": f"{settings.APP_NAME} API is running", "status": "ok"}
 
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy"}
+    return {"status": "healthy", "app": settings.APP_NAME}
