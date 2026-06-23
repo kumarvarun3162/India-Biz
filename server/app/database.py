@@ -10,6 +10,10 @@ async def connect_db(mongodb_uri: str, db_name: str) -> None:
     client = AsyncIOMotorClient(mongodb_uri)
     db = client[db_name]
     await client.admin.command("ping")
+
+    # Enforce uniqueness at the database level
+    await db.users.create_index("email", unique=True)
+
     print("✅  Connected to MongoDB Atlas")
 
 
@@ -21,3 +25,4 @@ async def close_db() -> None:
 
 def get_db():
     return db
+
