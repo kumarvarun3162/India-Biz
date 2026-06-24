@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, status
 from app.schemas.user import UserCreate, UserPublic, Token
 from app.crud.user import get_user_by_email, create_user
 from app.core.security import hash_password, create_access_token
+from app.schemas.user import UserLogin
+from app.core.security import verify_password
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -22,6 +24,19 @@ async def register(payload: UserCreate):
         phone=payload.phone,
         password_hash=hashed,
     )
+
+    token = create_access_token({"sub": str(user["_id"])})
+    return Token(access_token=token, user=UserPublic(**user))
+
+@router.post("/login", response_model=Token)
+async def login(payload: UserLogin):
+    user = await get_user_by_email(payload.email)
+
+    if not user or not verify_password(payload.password, user["password_hash"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+        )
 
     token = create_access_token({"sub": str(user["_id"])})
     return Token(access_token=token, user=UserPublic(**user))
