@@ -6,6 +6,9 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.routers.auth import router as auth_router
 from app.database import connect_db, close_db
 from app.config import settings
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from app.core.limiter import limiter
 from app.middleware.error_handler import (
     http_exception_handler,
     validation_exception_handler,
@@ -25,7 +28,9 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
-
+# ──Rate Limiter ───────────────────────────────────────────────────────────────
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # ── Middleware ─────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,

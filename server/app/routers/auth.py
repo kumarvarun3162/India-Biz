@@ -4,11 +4,12 @@ from app.crud.user import get_user_by_email, create_user
 from app.core.security import hash_password, create_access_token
 from app.schemas.user import UserLogin
 from app.core.security import verify_password
+from fastapi import Request
+from app.core.limiter import limiter
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
-
-
 @router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
+@limiter.limit("5/minute")
 async def register(payload: UserCreate):
     existing = await get_user_by_email(payload.email)
     if existing:
@@ -28,7 +29,10 @@ async def register(payload: UserCreate):
     token = create_access_token({"sub": str(user["_id"])})
     return Token(access_token=token, user=UserPublic(**user))
 
+
+
 @router.post("/login", response_model=Token)
+@limiter.limit("5/minute")
 async def login(payload: UserLogin):
     user = await get_user_by_email(payload.email)
 
