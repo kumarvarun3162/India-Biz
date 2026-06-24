@@ -1,7 +1,8 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
-
+from fastapi import Depends
+from app.dependencies.auth import get_current_user
 from app.core.security import decode_access_token
 from app.crud.user import get_user_by_id
 
@@ -29,3 +30,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
         raise credentials_error
 
     return user
+
+@router.get("/me", response_model=UserPublic)
+async def get_me(current_user: dict = Depends(get_current_user)):
+    return UserPublic(**current_user)
