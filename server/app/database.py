@@ -1,3 +1,4 @@
+import certifi
 from motor.motor_asyncio import AsyncIOMotorClient
 from typing import Optional
 
@@ -7,8 +8,14 @@ db = None
 
 async def connect_db(mongodb_uri: str, db_name: str) -> None:
     global client, db
-    client = AsyncIOMotorClient(mongodb_uri)
+
+    # tlsCAFile=certifi.where() fixes SSL handshake on Python 3.13 + Windows
+    client = AsyncIOMotorClient(
+        mongodb_uri,
+        tlsCAFile=certifi.where()
+    )
     db = client[db_name]
+
     await client.admin.command("ping")
     print("✅  Connected to MongoDB Atlas")
 
