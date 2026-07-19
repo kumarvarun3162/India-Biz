@@ -1,18 +1,15 @@
 import { createContext, useReducer, useEffect } from 'react'
 import { getMe } from '../api/auth'
 
-// ── State shape ──────────────────────────────────────────────────────────────
 const initialState = {
-  user: null,          // full user object from /api/auth/me
-  token: null,         // raw JWT string
+  user: null,
+  token: null,
   isAuthenticated: false,
-  isLoading: true,     // true while we check localStorage on mount
+  isLoading: true,
 }
 
-// ── Reducer ──────────────────────────────────────────────────────────────────
 function authReducer(state, action) {
   switch (action.type) {
-
     case 'LOGIN':
       localStorage.setItem('ibl_token', action.payload.token)
       return {
@@ -22,7 +19,6 @@ function authReducer(state, action) {
         isAuthenticated: true,
         isLoading: false,
       }
-
     case 'LOGOUT':
       localStorage.removeItem('ibl_token')
       return {
@@ -32,28 +28,40 @@ function authReducer(state, action) {
         isAuthenticated: false,
         isLoading: false,
       }
-
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload }
-
     default:
       return state
   }
 }
 
-// ── Context ──────────────────────────────────────────────────────────────────
 export const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState)
 
-  const login = (token, user) => {
-    dispatch({ type: 'LOGIN', payload: { token, user } })
-  }
+  // Check localStorage on first load
+  useEffect(() => {
+    const token = localStorage.getItem('ibl_token')
+    if (!token) {
+      dispatch({ type: 'SET_LOADING', payload: false })
+      return
+    }
+    getMe()
+      .then((res) => {
+        dispatch({ type: 'LOGIN', payload: { token, user: res.data } })
+      })
+      .catch(() => {
+        localStorage.removeItem('ibl_token')
+        dispatch({ type: 'SET_LOADING', payload: false })
+      })
+  }, [])
 
-  const logout = () => {
+  const login = (token, user) =>
+    dispatch({ type: 'LOGIN', payload: { token, user } })
+
+  const logout = () =>
     dispatch({ type: 'LOGOUT' })
-  }
 
   return (
     <AuthContext.Provider value={{ ...state, login, logout }}>
