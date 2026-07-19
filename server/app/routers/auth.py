@@ -10,7 +10,7 @@ from app.core.limiter import limiter
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 @router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")
-async def register(payload: UserCreate):
+async def register(request: Request, payload: UserCreate):
     existing = await get_user_by_email(payload.email)
     if existing:
         raise HTTPException(
@@ -33,7 +33,7 @@ async def register(payload: UserCreate):
 
 @router.post("/login", response_model=Token)
 @limiter.limit("5/minute")
-async def login(payload: UserLogin):
+async def login(request: Request, payload: UserLogin):
     user = await get_user_by_email(payload.email)
 
     if not user or not verify_password(payload.password, user["password_hash"]):
