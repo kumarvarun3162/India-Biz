@@ -7,6 +7,7 @@ from app.routers.auth import router as auth_router
 from app.database import connect_db, close_db
 from app.config import settings
 from slowapi import _rate_limit_exceeded_handler
+from app.routers.listings import router as listings_router
 from slowapi.errors import RateLimitExceeded
 from app.core.limiter import limiter
 from app.middleware.error_handler import (
@@ -45,6 +46,7 @@ app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, general_exception_handler)
 app.include_router(auth_router)
+app.include_router(listings_router)
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
 @app.get("/")
