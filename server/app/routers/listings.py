@@ -5,6 +5,9 @@ from app.schemas.listing import ListingCreate, ListingInDB
 from app.crud.listing import create_listing
 from app.crud.listing import get_listings_by_user
 from app.crud.listing import get_listing_by_slug, increment_views
+from app.schemas.listing import ListingUpdate
+from app.crud.listing import update_listing, delete_listing
+from app.dependencies.auth import verify_listing_owner
 
 
 router = APIRouter(prefix="/api/listings", tags=["listings"])
@@ -89,3 +92,50 @@ async def get_listing_by_slug_route(slug: str):
     listing["user_id"] = str(listing["user_id"])
 
     return {"success": True, "data": listing}
+
+# ── PUT /api/listings/{listing_id} ────────────────────────────────────────────
+@router.put("/{listing_id}", response_model=ListingInDB)
+async def update_existing_listing(
+    listing_id: str,
+    payload:    ListingUpdate,
+    listing:    dict = Depends(verify_listing_owner),   # ownership verified here
+):
+    """
+    Update a listing. Only the owner can do this.
+    Only fields present in the payload are updated — others untouched.
+    """
+    # model_dump(exclude_none=True) — only send fields the user actually provided
+    updates = payload.model_dump(exclude_none=True)
+
+    if not updates:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No fields provided to update",
+        )
+
+    # Flatten nested BusinessHours to plain dict if provided
+    if "hours" in updates and payload.hours:
+        updates["hours"] = payload.hours.model_dump()
+
+    updated = await update_listing(listing_id, updates)
+    return updated
+
+
+# ── DELETE /api/listings/{listing_id} ─────────────────────────────────────────
+@router.delete("/{listing_id}", status_code=status.HTTP_200_OK)
+async def delete_existing_listing(
+    listing_id: str,
+    listing:    dict = Depends(verify_listing_owner),   # ownership verified here
+):
+    """
+    Permanently delete a listing. Only the owner can do this.
+    """
+    deleted = await delete_listing(listing_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete listing",
+        )
+    return {"success": True, "message": "Listing deleted successfully"}
+
+
