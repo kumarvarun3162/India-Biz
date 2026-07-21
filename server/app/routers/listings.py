@@ -4,6 +4,7 @@ from app.utils.category_templates import CATEGORIES
 from app.schemas.listing import ListingCreate, ListingInDB
 from app.crud.listing import create_listing
 from app.crud.listing import get_listings_by_user
+from app.crud.listing import get_listing_by_slug, increment_views
 
 
 router = APIRouter(prefix="/api/listings", tags=["listings"])
@@ -32,7 +33,7 @@ async def create_new_listing(
     return listing
 
 
-from app.crud.listing import get_listings_by_user
+
 
 
 # ── GET /api/listings/mine ────────────────────────────────────────────────────
@@ -64,3 +65,27 @@ async def get_categories():
         "success": True,
         "categories": CATEGORIES,
     }
+
+# ── GET /api/listings/{slug} ──────────────────────────────────────────────────
+@router.get("/{slug}")
+async def get_listing_by_slug_route(slug: str):
+    """
+    Public single listing page.
+    Atomically increments views_total on every hit.
+    This is the URL that gets indexed by Google.
+    """
+    listing = await get_listing_by_slug(slug)
+
+    if not listing:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No listing found with slug '{slug}'",
+        )
+
+    # Increment view count without waiting for it (fire and forget)
+    await increment_views(listing["_id"])
+
+    listing["_id"]     = str(listing["_id"])
+    listing["user_id"] = str(listing["user_id"])
+
+    return {"success": True, "data": listing}
