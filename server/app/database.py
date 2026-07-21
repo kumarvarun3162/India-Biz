@@ -8,17 +8,20 @@ db = None
 
 async def connect_db(mongodb_uri: str, db_name: str) -> None:
     global client, db
-
-    # tlsCAFile=certifi.where() fixes SSL handshake on Python 3.13 + Windows
-    client = AsyncIOMotorClient(
-        mongodb_uri,
-        tlsCAFile=certifi.where()
-    )
+    client = AsyncIOMotorClient(mongodb_uri, tlsCAFile=certifi.where())
     db = client[db_name]
-
     await client.admin.command("ping")
-    print("✅  Connected to MongoDB Atlas")
 
+    # Indexes
+    await db.users.create_index("email", unique=True)
+    await db.listings.create_index(
+        [("business_name", "text"), ("description", "text")],
+        name="listings_text_search"
+    )
+    await db.listings.create_index("slug", unique=True)
+    await db.listings.create_index("user_id")
+
+    print("✅  Connected to MongoDB Atlas")
 
 async def close_db() -> None:
     global client
