@@ -3,6 +3,7 @@ from app.dependencies.auth import get_current_user
 from app.utils.category_templates import CATEGORIES
 from app.schemas.listing import ListingCreate, ListingInDB
 from app.crud.listing import create_listing
+from app.crud.listing import get_listings_by_user
 
 
 router = APIRouter(prefix="/api/listings", tags=["listings"])
@@ -51,7 +52,6 @@ async def get_my_listings(
         "data":    listings,
         "count":   len(listings),
     }
-
 
 @router.get("/categories")
 async def get_categories():
