@@ -31,6 +31,28 @@ async def create_new_listing(
     return listing
 
 
+from app.crud.listing import get_listings_by_user
+
+
+# ── GET /api/listings/mine ────────────────────────────────────────────────────
+@router.get("/mine")
+async def get_my_listings(
+    current_user: dict = Depends(get_current_user),
+):
+    """Returns all listings belonging to the authenticated user."""
+    listings = await get_listings_by_user(str(current_user["_id"]))
+
+    for l in listings:
+        l["_id"]     = str(l["_id"])
+        l["user_id"] = str(l["user_id"])
+
+    return {
+        "success": True,
+        "data":    listings,
+        "count":   len(listings),
+    }
+
+
 @router.get("/categories")
 async def get_categories():
     """
