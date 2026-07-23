@@ -3,17 +3,19 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from app.routers.auth import router as auth_router
-from app.database import connect_db, close_db
-from app.config import settings
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+
+from app.database import connect_db, close_db
+from app.config import settings
 from app.core.limiter import limiter
 from app.middleware.error_handler import (
     http_exception_handler,
     validation_exception_handler,
     general_exception_handler,
 )
+from app.routers.auth import router as auth_router
+from app.routers.listings import router as listings_router
 
 
 @asynccontextmanager
@@ -28,10 +30,12 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
-# ──Rate Limiter ───────────────────────────────────────────────────────────────
+
+# ── Rate limiter ──────────────────────────────────────────────────────────────
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-# ── Middleware ─────────────────────────────────────────────────────────────────
+
+# ── CORS ──────────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.CLIENT_URL],
@@ -40,18 +44,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Exception handlers ─────────────────────────────────────────────────────────
+# ── Exception handlers ────────────────────────────────────────────────────────
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, general_exception_handler)
-app.include_router(auth_router)
 
-# ── Routes ─────────────────────────────────────────────────────────────────────
+# ── Routers ───────────────────────────────────────────────────────────────────
+app.include_router(auth_router)
+app.include_router(listings_router)
+
+
 @app.get("/")
 async def root():
-    return {"message": f"{settings.APP_NAME} API is running", "status": "ok"}
+    return {"message": f"{settings.APP_NAME} API is running"}
 
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy", "app": settings.APP_NAME} 
+    return {"status": "healthy"}
