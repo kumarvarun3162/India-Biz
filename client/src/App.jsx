@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navbar         from './components/common/Navbar'
 import ProtectedRoute from './components/common/ProtectedRoute'
+import PublicListing from './pages/PublicListing'
 
 import Home           from './pages/Home'
 import Login          from './pages/Login'
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="/"       element={<Home />} />
             <Route path="/login"    element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/listing/:slug" element={<PublicListing />} />
 
             {/* Protected routes — require login */}
             <Route path="/dashboard" element={
