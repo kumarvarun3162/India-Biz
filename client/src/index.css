@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@plugin "@tailwindcss/line-clamp";
 
 @theme {
   --color-saffron-50: #fff8f5;
