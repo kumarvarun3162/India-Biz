@@ -18,6 +18,8 @@ class Settings(BaseSettings):
 
     # CORS
     CLIENT_URL: str = "http://localhost:5173"
+    CLIENT_URL_PROD: str = ""  # set this in Render too
+
 
     class Config:
         env_file = ".env"
