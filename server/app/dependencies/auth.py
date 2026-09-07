@@ -30,7 +30,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
 
 
 async def verify_listing_owner(
-    listing_id:   str,
+    listing_id: str,
     current_user: dict = Depends(get_current_user),
 ) -> dict:
     listing = await get_listing_by_id(listing_id)
