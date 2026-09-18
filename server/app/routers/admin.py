@@ -137,3 +137,41 @@ async def admin_analytics(admin=Depends(require_admin)):
         "top_listings": [_ser(l) for l in top],
         "category_breakdown": categories,
     }
+
+@router.post("/init")
+async def init_first_admin(payload: dict):
+    from app.database import get_db
+    from app.core.security import hash_password
+    from datetime import datetime, timezone
+    import os
+
+    db = get_db()
+
+    # Block if admin already exists
+    existing = await db.users.find_one({"role": "admin"})
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin already initialized"
+        )
+
+    # Require a secret init key set in environment
+    init_key = os.getenv("ADMIN_INIT_KEY")
+    if not init_key or payload.get("init_key") != init_key:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid init key"
+        )
+
+    await db.users.insert_one({
+        "full_name":         payload.get("full_name", "Admin"),
+        "email":             payload["email"],
+        "phone":             payload.get("phone", ""),
+        "password_hash":     hash_password(payload["password"]),
+        "role":              "admin",
+        "subscription_tier": "premium",
+        "is_suspended":      False,
+        "created_at":        datetime.now(timezone.utc),
+        "updated_at":        datetime.now(timezone.utc),
+    })
+    return {"success": True, "message": "Admin initialized"}
