@@ -25,4 +25,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
-*.swo
+*.swoseed_admin.py
+.env
+seed_admin.py
