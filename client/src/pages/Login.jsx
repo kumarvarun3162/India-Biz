@@ -44,7 +44,11 @@ export default function Login() {
     try {
       const res = await loginUser(form)
       login(res.data.access_token, res.data.user)
-      navigate(from, { replace: true })
+      if (res.data.user.role === 'admin') {
+        navigate('/admin', { replace: true })
+      } else {
+        navigate(from, { replace: true })
+      }
     } catch (err) {
       setServerError(
         err.response?.data?.detail || 'Incorrect email or password'

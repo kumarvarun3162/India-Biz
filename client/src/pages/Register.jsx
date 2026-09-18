@@ -51,7 +51,11 @@ export default function Register() {
     try {
       const res = await registerUser(form)
       login(res.data.access_token, res.data.user)
-      navigate('/dashboard')
+      if (res.data.user.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err) {
       setServerError(
         err.response?.data?.detail || 'Something went wrong. Please try again.'
