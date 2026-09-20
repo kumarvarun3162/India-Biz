@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useListingBySlug } from "../hooks/useListing";
 
@@ -29,6 +30,28 @@ const DAY_LABELS = {
 export default function PublicListing() {
   const { slug } = useParams();
   const { listing, isLoading, error } = useListingBySlug(slug);
+
+  // Hooks must always be called before conditional returns
+  const [lightbox, setLightbox] = useState(null);
+
+  const today =
+    DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
+
+  const todayHrs = listing?.hours?.[today];
+
+  const handleWhatsApp = () => {
+    const num = listing?.whatsapp || listing?.phone;
+
+    if (!num) return;
+
+    const cleanNum = String(num).replace(/\D/g, "");
+
+    const text = encodeURIComponent(
+      `Hi, I found your listing on India Biz Listing. I'd like to know more about ${listing.business_name}.`
+    );
+
+    window.open(`https://wa.me/91${cleanNum}?text=${text}`, "_blank");
+  };
 
   if (isLoading) {
     return (
@@ -62,21 +85,6 @@ export default function PublicListing() {
   }
 
   const icon = CATEGORY_ICONS[listing.category] || "🏪";
-  const [lightbox, setLightbox] = useState(null) // null = closed, number = index
-  const today =
-    DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
-
-  const todayHrs = listing.hours?.[today];
-
-  const handleWhatsApp = () => {
-    const num = listing.whatsapp || listing.phone;
-
-    const text = encodeURIComponent(
-      `Hi, I found your listing on India Biz Listing. I'd like to know more about ${listing.business_name}.`
-    );
-
-    window.open(`https://wa.me/91${num}?text=${text}`, "_blank");
-  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
@@ -104,14 +112,16 @@ export default function PublicListing() {
 
         {todayHrs && (
           <div
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-5 ${todayHrs.closed
-              ? "bg-red-50 text-red-600"
-              : "bg-green-50 text-green-700"
-              }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-5 ${
+              todayHrs.closed
+                ? "bg-red-50 text-red-600"
+                : "bg-green-50 text-green-700"
+            }`}
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full ${todayHrs.closed ? "bg-red-400" : "bg-green-400"
-                }`}
+              className={`w-1.5 h-1.5 rounded-full ${
+                todayHrs.closed ? "bg-red-400" : "bg-green-400"
+              }`}
             />
 
             {todayHrs.closed
@@ -126,15 +136,18 @@ export default function PublicListing() {
 
         {/* CTA Buttons */}
         <div className="flex gap-3 flex-wrap">
-          <a
-            href={`tel:${listing.phone}`}
-            className="flex-1 min-w-[140px] flex items-center justify-center gap-2 py-3 bg-saffron-600 text-white text-sm font-semibold rounded-xl hover:bg-saffron-700 transition-colors"
-          >
-            📞 Call now
-          </a>
+          {listing.phone && (
+            <a
+              href={`tel:${listing.phone}`}
+              className="flex-1 min-w-[140px] flex items-center justify-center gap-2 py-3 bg-saffron-600 text-white text-sm font-semibold rounded-xl hover:bg-saffron-700 transition-colors"
+            >
+              📞 Call now
+            </a>
+          )}
 
           {(listing.whatsapp || listing.phone) && (
             <button
+              type="button"
               onClick={handleWhatsApp}
               className="flex-1 min-w-[140px] flex items-center justify-center gap-2 py-3 bg-green-500 text-white text-sm font-semibold rounded-xl hover:bg-green-600 transition-colors"
             >
@@ -154,28 +167,28 @@ export default function PublicListing() {
           )}
         </div>
       </div>
+
       {/* Photo gallery */}
       {listing.images?.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm mb-6">
-          <h2 className="font-semibold text-sm uppercase tracking-wide
-                   text-gray-400 mb-4">
+          <h2 className="font-semibold text-sm uppercase tracking-wide text-gray-400 mb-4">
             Photos
           </h2>
+
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {listing.images.map((url, i) => (
-              <div
-                key={i}
+              <button
+                type="button"
+                key={url || i}
                 onClick={() => setLightbox(i)}
-                className="aspect-square rounded-xl overflow-hidden
-                     cursor-pointer hover:opacity-90 transition-opacity
-                     border border-gray-100"
+                className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity border border-gray-100 p-0"
               >
                 <img
                   src={url}
                   alt={`${listing.business_name} photo ${i + 1}`}
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -188,16 +201,18 @@ export default function PublicListing() {
         </h2>
 
         <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-gray-400 w-5">📞</span>
+          {listing.phone && (
+            <div className="flex items-center gap-3 text-sm">
+              <span className="text-gray-400 w-5">📞</span>
 
-            <a
-              href={`tel:${listing.phone}`}
-              className="text-gray-700 hover:text-saffron-600"
-            >
-              {listing.phone}
-            </a>
-          </div>
+              <a
+                href={`tel:${listing.phone}`}
+                className="text-gray-700 hover:text-saffron-600"
+              >
+                {listing.phone}
+              </a>
+            </div>
+          )}
 
           {listing.email && (
             <div className="flex items-center gap-3 text-sm">
@@ -228,13 +243,14 @@ export default function PublicListing() {
           )}
         </div>
       </div>
+
       {/* Offers and schemes */}
       {listing.offers && (
-        <div className="bg-gradient-to-br from-saffron-50 to-amber-50
-                  border border-saffron-200 rounded-2xl p-6 shadow-sm mb-6">
+        <div className="bg-gradient-to-br from-saffron-50 to-amber-50 border border-saffron-200 rounded-2xl p-6 shadow-sm mb-6">
           <h2 className="font-semibold text-saffron-800 mb-3 flex items-center gap-2">
             🎁 Offers &amp; Schemes
           </h2>
+
           <p className="text-sm text-saffron-900 leading-relaxed whitespace-pre-line">
             {listing.offers}
           </p>
@@ -256,15 +272,17 @@ export default function PublicListing() {
               return (
                 <div
                   key={d}
-                  className={`flex justify-between items-center py-2.5 text-sm ${isToday
-                    ? "font-semibold text-gray-900"
-                    : "text-gray-600"
-                    }`}
+                  className={`flex justify-between items-center py-2.5 text-sm ${
+                    isToday
+                      ? "font-semibold text-gray-900"
+                      : "text-gray-600"
+                  }`}
                 >
                   <span className="flex items-center gap-2">
                     {isToday && (
                       <span className="w-1.5 h-1.5 rounded-full bg-saffron-500" />
                     )}
+
                     {DAY_LABELS[d]}
                   </span>
 
@@ -272,7 +290,7 @@ export default function PublicListing() {
                     <span className="text-gray-300 text-xs">Closed</span>
                   ) : (
                     <span>
-                      {h?.open} – {h?.close}
+                      {h?.open || "—"} – {h?.close || "—"}
                     </span>
                   )}
                 </div>
@@ -288,22 +306,24 @@ export default function PublicListing() {
         <Link to="/" className="text-saffron-600 hover:underline">
           India Biz Listing
         </Link>{" "}
-        · {listing.views_total} views
+        · {listing.views_total ?? 0} views
       </p>
+
       {/* Lightbox */}
       {lightbox !== null && listing.images?.length > 0 && (
         <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center
-               justify-center p-4"
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
           onClick={() => setLightbox(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image viewer"
         >
           {/* Close */}
           <button
+            type="button"
             onClick={() => setLightbox(null)}
-            className="absolute top-4 right-4 text-white text-2xl
-                 w-10 h-10 flex items-center justify-center
-                 bg-black/50 rounded-full hover:bg-black/70
-                 transition-colors"
+            className="absolute top-4 right-4 text-white text-2xl w-10 h-10 flex items-center justify-center bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+            aria-label="Close image viewer"
           >
             ×
           </button>
@@ -311,10 +331,13 @@ export default function PublicListing() {
           {/* Prev */}
           {lightbox > 0 && (
             <button
-              onClick={(e) => { e.stopPropagation(); setLightbox(lightbox - 1) }}
-              className="absolute left-4 text-white text-2xl w-10 h-10
-                   flex items-center justify-center bg-black/50
-                   rounded-full hover:bg-black/70 transition-colors"
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightbox(lightbox - 1);
+              }}
+              className="absolute left-4 text-white text-2xl w-10 h-10 flex items-center justify-center bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+              aria-label="Previous image"
             >
               ‹
             </button>
@@ -323,7 +346,7 @@ export default function PublicListing() {
           {/* Image */}
           <img
             src={listing.images[lightbox]}
-            alt={`Photo ${lightbox + 1}`}
+            alt={`${listing.business_name} photo ${lightbox + 1}`}
             className="max-h-[85vh] max-w-full object-contain rounded-xl"
             onClick={(e) => e.stopPropagation()}
           />
@@ -331,18 +354,20 @@ export default function PublicListing() {
           {/* Next */}
           {lightbox < listing.images.length - 1 && (
             <button
-              onClick={(e) => { e.stopPropagation(); setLightbox(lightbox + 1) }}
-              className="absolute right-4 text-white text-2xl w-10 h-10
-                   flex items-center justify-center bg-black/50
-                   rounded-full hover:bg-black/70 transition-colors"
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightbox(lightbox + 1);
+              }}
+              className="absolute right-4 text-white text-2xl w-10 h-10 flex items-center justify-center bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+              aria-label="Next image"
             >
               ›
             </button>
           )}
 
           {/* Counter */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2
-                    text-white text-sm bg-black/50 px-3 py-1 rounded-full">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-3 py-1 rounded-full">
             {lightbox + 1} / {listing.images.length}
           </div>
         </div>
