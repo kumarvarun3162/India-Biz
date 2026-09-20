@@ -8,3 +8,5 @@ export const loginUser = (data) =>
 
 export const getMe = () =>
   axiosInstance.get('/api/auth/me')
+export const updateProfile = (data) =>
+  axiosInstance.put('/api/auth/profile', data)

@@ -10,7 +10,6 @@ export default function Navbar() {
     navigate('/')
   }
 
-  // Don't flash the wrong UI while checking localStorage
   if (isLoading) {
     return (
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -18,7 +17,6 @@ export default function Navbar() {
           <span className="font-semibold text-lg text-saffron-600">
             India Biz Listing <span className="text-gray-400 font-normal">₹</span>
           </span>
-
           <div className="h-8 w-40 bg-gray-100 rounded-lg animate-pulse" />
         </div>
       </nav>
@@ -64,8 +62,21 @@ export default function Navbar() {
 
             {/* User avatar + name */}
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200">
-              <div className="w-6 h-6 rounded-full bg-saffron-600 flex items-center justify-center text-white text-xs font-semibold">
-                {user?.full_name?.[0]?.toUpperCase() || 'U'}
+
+              {/* Avatar — shows profile picture or initial */}
+              <div className="w-7 h-7 rounded-full overflow-hidden bg-saffron-600
+                              flex items-center justify-center flex-shrink-0">
+                {user?.avatar_url ? (
+                  <img
+                    src={user.avatar_url}
+                    alt={user.full_name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-white text-xs font-semibold">
+                    {user?.full_name?.[0]?.toUpperCase()}
+                  </span>
+                )}
               </div>
 
               <span className="text-sm text-gray-700 font-medium max-w-[120px] truncate">
