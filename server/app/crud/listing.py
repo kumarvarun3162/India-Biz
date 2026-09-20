@@ -29,7 +29,19 @@ async def create_listing(user_id: str, data: dict) -> dict:
         "updated_at": now,
     }
     result = await db.listings.insert_one(doc)
-    doc["_id"] = result.inserted_id
+    doc["_id"] = {
+    **data,
+    "user_id":     ObjectId(user_id),
+    "slug":        slugify(data["business_name"]),
+    "images":      [],           # ← add
+    "cover_image": None,         # ← add
+    "offers":      data.get("offers", None),   # ← add
+    "is_active":   True,
+    "is_featured": False,
+    "views_total": 0,
+    "created_at":  now,
+    "updated_at":  now,
+    }
     return doc
 
 

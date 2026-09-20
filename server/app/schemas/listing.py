@@ -36,6 +36,7 @@ class ListingCreate(BaseModel):
     email:         Optional[str] = None
     website:       Optional[str] = None
     hours:         BusinessHours = Field(default_factory=BusinessHours)
+    offers: Optional[str] = None   # promotions/schemes text
 
 
 class ListingUpdate(BaseModel):
@@ -53,6 +54,9 @@ class ListingUpdate(BaseModel):
     website:       Optional[str]          = None
     hours:         Optional[BusinessHours] = None
     is_active:     Optional[bool]          = None
+    offers:       Optional[str]       = None
+    images:       Optional[list[str]] = None
+    cover_image:  Optional[str]       = None
 
 
 # ── Response bodies ───────────────────────────────────────────────────────────
@@ -76,6 +80,9 @@ class ListingPublic(BaseModel):
     is_featured:   bool         = False
     views_total:   int          = 0
     created_at:    datetime
+    images:      list[str]   = []
+    cover_image: Optional[str] = None
+    offers:      Optional[str] = None
 
     class Config:
         populate_by_name = True
