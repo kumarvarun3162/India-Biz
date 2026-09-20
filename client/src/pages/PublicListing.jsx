@@ -228,6 +228,18 @@ export default function PublicListing() {
           )}
         </div>
       </div>
+      {/* Offers and schemes */}
+      {listing.offers && (
+        <div className="bg-gradient-to-br from-saffron-50 to-amber-50
+                  border border-saffron-200 rounded-2xl p-6 shadow-sm mb-6">
+          <h2 className="font-semibold text-saffron-800 mb-3 flex items-center gap-2">
+            🎁 Offers &amp; Schemes
+          </h2>
+          <p className="text-sm text-saffron-900 leading-relaxed whitespace-pre-line">
+            {listing.offers}
+          </p>
+        </div>
+      )}
 
       {/* Business Hours */}
       {listing.hours && (
