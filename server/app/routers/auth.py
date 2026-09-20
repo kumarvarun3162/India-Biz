@@ -4,6 +4,8 @@ from app.crud.user import get_user_by_email, create_user
 from app.core.security import hash_password, verify_password, create_access_token
 from app.dependencies.auth import get_current_user
 from app.core.limiter import limiter
+from app.crud.user import update_user_profile
+
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -44,3 +46,16 @@ async def login(request: Request, payload: UserLogin):
 @router.get("/me", response_model=UserPublic)
 async def get_me(current_user: dict = Depends(get_current_user)):
     return UserPublic(**current_user)
+
+@router.put("/profile")
+async def update_profile(
+    payload:      dict = ...,
+    current_user: dict = Depends(get_current_user),
+):
+    allowed = {}
+    if "full_name"  in payload: allowed["full_name"]  = payload["full_name"]
+    if "phone"      in payload: allowed["phone"]      = payload["phone"]
+    if "avatar_url" in payload: allowed["avatar_url"] = payload["avatar_url"]
+
+    updated = await update_user_profile(str(current_user["_id"]), allowed)
+    return {"success": True, "data": UserPublic(**updated)}

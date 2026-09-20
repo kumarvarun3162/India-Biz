@@ -32,3 +32,10 @@ async def create_user(full_name: str, email: str, phone: str, password_hash: str
     result = await db.users.insert_one(user_doc)
     user_doc["_id"] = result.inserted_id
     return user_doc
+
+async def update_user_profile(user_id: str, updates: dict) -> dict | None:
+    db  = get_db()
+    oid = ObjectId(user_id)
+    updates["updated_at"] = datetime.now(timezone.utc)
+    await db.users.update_one({"_id": oid}, {"$set": updates})
+    return await db.users.find_one({"_id": oid}, {"password_hash": 0})

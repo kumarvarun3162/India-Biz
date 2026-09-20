@@ -30,6 +30,7 @@ class UserPublic(BaseModel):
     subscription_tier: str = "free"
     subscription_expires: Optional[datetime] = None
     created_at: datetime
+    avatar_url: Optional[str] = None
 
     class Config:
         populate_by_name = True
