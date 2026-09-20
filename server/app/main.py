@@ -18,11 +18,14 @@ from app.routers.auth import router as auth_router
 from app.routers.listings import router as listings_router
 from app.routers.admin import router as admin_router
 
+from app.config.cloudinary import init_cloudinary
+
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_db(settings.MONGODB_URI, settings.DB_NAME)
+    init_cloudinary()
     yield
     await close_db()
 
