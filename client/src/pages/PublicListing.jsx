@@ -62,7 +62,7 @@ export default function PublicListing() {
   }
 
   const icon = CATEGORY_ICONS[listing.category] || "🏪";
-
+  const [lightbox, setLightbox] = useState(null) // null = closed, number = index
   const today =
     DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
 
@@ -104,16 +104,14 @@ export default function PublicListing() {
 
         {todayHrs && (
           <div
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-5 ${
-              todayHrs.closed
-                ? "bg-red-50 text-red-600"
-                : "bg-green-50 text-green-700"
-            }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-5 ${todayHrs.closed
+              ? "bg-red-50 text-red-600"
+              : "bg-green-50 text-green-700"
+              }`}
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                todayHrs.closed ? "bg-red-400" : "bg-green-400"
-              }`}
+              className={`w-1.5 h-1.5 rounded-full ${todayHrs.closed ? "bg-red-400" : "bg-green-400"
+                }`}
             />
 
             {todayHrs.closed
@@ -156,6 +154,32 @@ export default function PublicListing() {
           )}
         </div>
       </div>
+      {/* Photo gallery */}
+      {listing.images?.length > 0 && (
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm mb-6">
+          <h2 className="font-semibold text-sm uppercase tracking-wide
+                   text-gray-400 mb-4">
+            Photos
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {listing.images.map((url, i) => (
+              <div
+                key={i}
+                onClick={() => setLightbox(i)}
+                className="aspect-square rounded-xl overflow-hidden
+                     cursor-pointer hover:opacity-90 transition-opacity
+                     border border-gray-100"
+              >
+                <img
+                  src={url}
+                  alt={`${listing.business_name} photo ${i + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Contact */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm mb-6">
@@ -220,11 +244,10 @@ export default function PublicListing() {
               return (
                 <div
                   key={d}
-                  className={`flex justify-between items-center py-2.5 text-sm ${
-                    isToday
-                      ? "font-semibold text-gray-900"
-                      : "text-gray-600"
-                  }`}
+                  className={`flex justify-between items-center py-2.5 text-sm ${isToday
+                    ? "font-semibold text-gray-900"
+                    : "text-gray-600"
+                    }`}
                 >
                   <span className="flex items-center gap-2">
                     {isToday && (
@@ -255,6 +278,63 @@ export default function PublicListing() {
         </Link>{" "}
         · {listing.views_total} views
       </p>
+      {/* Lightbox */}
+      {lightbox !== null && listing.images?.length > 0 && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center
+               justify-center p-4"
+          onClick={() => setLightbox(null)}
+        >
+          {/* Close */}
+          <button
+            onClick={() => setLightbox(null)}
+            className="absolute top-4 right-4 text-white text-2xl
+                 w-10 h-10 flex items-center justify-center
+                 bg-black/50 rounded-full hover:bg-black/70
+                 transition-colors"
+          >
+            ×
+          </button>
+
+          {/* Prev */}
+          {lightbox > 0 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setLightbox(lightbox - 1) }}
+              className="absolute left-4 text-white text-2xl w-10 h-10
+                   flex items-center justify-center bg-black/50
+                   rounded-full hover:bg-black/70 transition-colors"
+            >
+              ‹
+            </button>
+          )}
+
+          {/* Image */}
+          <img
+            src={listing.images[lightbox]}
+            alt={`Photo ${lightbox + 1}`}
+            className="max-h-[85vh] max-w-full object-contain rounded-xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {/* Next */}
+          {lightbox < listing.images.length - 1 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setLightbox(lightbox + 1) }}
+              className="absolute right-4 text-white text-2xl w-10 h-10
+                   flex items-center justify-center bg-black/50
+                   rounded-full hover:bg-black/70 transition-colors"
+            >
+              ›
+            </button>
+          )}
+
+          {/* Counter */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2
+                    text-white text-sm bg-black/50 px-3 py-1 rounded-full">
+            {lightbox + 1} / {listing.images.length}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
