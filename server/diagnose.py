@@ -64,7 +64,6 @@ print("\n--- Checking app modules ---")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 try:
-    from app.config import settings
     print(f"✅ config loaded")
     print(f"   MONGODB_URI set: {'Yes' if settings.MONGODB_URI else 'NO - MISSING'}")
     print(f"   JWT_SECRET set:  {'Yes' if settings.JWT_SECRET else 'NO - MISSING'}")
@@ -140,7 +139,7 @@ import asyncio, certifi
 async def test_mongo():
     try:
         from motor.motor_asyncio import AsyncIOMotorClient
-        from app.config import settings
+        from app.services import settings
         client = AsyncIOMotorClient(
             settings.MONGODB_URI,
             tlsCAFile=certifi.where(),

@@ -5,9 +5,8 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-
+from app.config import settings, init_cloudinary
 from app.database import connect_db, close_db
-from app.config import settings
 from app.core.limiter import limiter
 from app.middleware.error_handler import (
     http_exception_handler,
@@ -18,7 +17,6 @@ from app.routers.auth import router as auth_router
 from app.routers.listings import router as listings_router
 from app.routers.admin import router as admin_router
 
-from app.config.cloudinary import init_cloudinary
 
 
 
