@@ -16,6 +16,7 @@ from app.middleware.error_handler import (
 from app.routers.auth import router as auth_router
 from app.routers.listings import router as listings_router
 from app.routers.admin import router as admin_router
+from app.routers.upload import router as upload_router
 
 
 
@@ -61,6 +62,7 @@ app.add_exception_handler(Exception, general_exception_handler)
 app.include_router(admin_router)
 app.include_router(auth_router)
 app.include_router(listings_router)
+app.include_router(upload_router)
 
 
 @app.get("/")
