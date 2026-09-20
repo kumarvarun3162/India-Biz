@@ -15,6 +15,7 @@ export default function ListingCard({ listing, onDelete }) {
       hover:shadow-md
       ${listing.is_active ? 'border-gray-200' : 'border-gray-100 opacity-70'}
     `}>
+
       {/* Top row */}
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 rounded-xl bg-saffron-50 flex items-center
@@ -29,7 +30,6 @@ export default function ListingCard({ listing, onDelete }) {
             {listing.city}, {listing.state}
           </p>
         </div>
-        {/* Status badge */}
         <span className={`
           text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0
           ${listing.is_active
@@ -46,15 +46,15 @@ export default function ListingCard({ listing, onDelete }) {
         {listing.description}
       </p>
 
-      {/* Stats row */}
+      {/* Stats */}
       <div className="flex items-center gap-4 text-xs text-gray-400">
         <span>👁 {listing.views_total || 0} views</span>
         <span>📞 {listing.phone}</span>
       </div>
 
-      {/* Action buttons */}
+      {/* Actions */}
       <div className="flex gap-2 pt-1 border-t border-gray-100">
-        {/* View public page */}
+
         
           href={`/listing/${listing.slug}`}
           target="_blank"
@@ -62,26 +62,27 @@ export default function ListingCard({ listing, onDelete }) {
           className="flex-1 text-center text-xs font-medium text-saffron-600
                      py-1.5 rounded-lg hover:bg-saffron-50 transition-colors"
         >
-          View listing ↗
+          View ↗
         </a>
 
-        {/* Edit */}
         <Link
           to={`/listing/edit/${listing._id}`}
           className="flex-1 text-center text-xs font-medium text-gray-600
-                     py-1.5 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                     py-1.5 rounded-lg hover:bg-gray-50 transition-colors
+                     border border-gray-200"
         >
           Edit
         </Link>
 
-        {/* Delete */}
         <button
           onClick={() => onDelete(listing._id, listing.business_name)}
           className="flex-1 text-center text-xs font-medium text-red-500
-                     py-1.5 rounded-lg hover:bg-red-50 transition-colors border border-red-100"
+                     py-1.5 rounded-lg hover:bg-red-50 transition-colors
+                     border border-red-100"
         >
           Delete
         </button>
+
       </div>
     </div>
   )
