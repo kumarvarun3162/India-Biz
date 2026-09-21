@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.dependencies.auth import get_current_user, verify_listing_owner
 from app.utils.category_templates import CATEGORIES
 from app.schemas.listing import ListingCreate, ListingUpdate, ListingInDB
+from app.crud.analytics import track_view
 from app.crud.listing import (
     create_listing, get_listing_by_slug, get_listings_by_user,
     search_listings, update_listing, increment_views, delete_listing
@@ -113,13 +114,15 @@ async def get_listing_by_slug_route(slug: str):
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"No listing found with slug '{slug}'",
             )
+        # Track view — fire and forget, don't block the response
+        await track_view(listing["_id"])
+        # Also increment legacy views_total counter
         await increment_views(listing["_id"])
         return {"success": True, "data": serialize_listing(listing)}
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch listing: {str(e)}")
-
 
 # ── PUT /api/listings/{listing_id} ────────────────────────────────────────────
 @router.put("/{listing_id}")
