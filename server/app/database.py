@@ -39,6 +39,12 @@ async def connect_db(mongodb_uri: str, db_name: str) -> None:
     db = client[db_name]
     await client.admin.command("ping")
     print("✅  Connected to MongoDB Atlas")
+    # Analytics — one record per listing per day
+    await db.analytics.create_index(
+        [("listing_id", 1), ("date", 1)],
+        unique=True,
+        name="analytics_listing_date"
+    )
 
 
 async def close_db() -> None:
