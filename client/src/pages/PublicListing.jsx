@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useListingBySlug } from "../hooks/useListing";
+import { trackEvent } from '../api/analytics'
 
 const CATEGORY_ICONS = {
   restaurant: "🍽️",
@@ -40,18 +41,17 @@ export default function PublicListing() {
   const todayHrs = listing?.hours?.[today];
 
   const handleWhatsApp = () => {
-    const num = listing?.whatsapp || listing?.phone;
-
-    if (!num) return;
-
-    const cleanNum = String(num).replace(/\D/g, "");
-
+    // Track the click
+    if (listing._id) {
+      trackEvent(listing._id, 'whatsapp')
+    }
+    const num = listing.whatsapp || listing.phone
     const text = encodeURIComponent(
-      `Hi, I found your listing on India Biz Listing. I'd like to know more about ${listing.business_name}.`
-    );
-
-    window.open(`https://wa.me/91${cleanNum}?text=${text}`, "_blank");
-  };
+      `Hi, I found your listing on India Biz Listing. ` +
+      `I'd like to know more about ${listing.business_name}.`
+    )
+    window.open(`https://wa.me/91${num}?text=${text}`, '_blank')
+  }
 
   if (isLoading) {
     return (
@@ -112,16 +112,14 @@ export default function PublicListing() {
 
         {todayHrs && (
           <div
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-5 ${
-              todayHrs.closed
-                ? "bg-red-50 text-red-600"
-                : "bg-green-50 text-green-700"
-            }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-5 ${todayHrs.closed
+              ? "bg-red-50 text-red-600"
+              : "bg-green-50 text-green-700"
+              }`}
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                todayHrs.closed ? "bg-red-400" : "bg-green-400"
-              }`}
+              className={`w-1.5 h-1.5 rounded-full ${todayHrs.closed ? "bg-red-400" : "bg-green-400"
+                }`}
             />
 
             {todayHrs.closed
@@ -139,8 +137,10 @@ export default function PublicListing() {
           {listing.phone && (
             <a
               href={`tel:${listing.phone}`}
-              className="flex-1 min-w-[140px] flex items-center justify-center gap-2 py-3 bg-saffron-600 text-white text-sm font-semibold rounded-xl hover:bg-saffron-700 transition-colors"
-            >
+              onClick={() => listing._id && trackEvent(listing._id, 'phone')}
+              className="flex-1 min-w-[140px] flex items-center justify-center gap-2
+             py-3 bg-saffron-600 text-white text-sm font-semibold
+             rounded-xl hover:bg-saffron-700 transition-colors">
               📞 Call now
             </a>
           )}
@@ -272,11 +272,10 @@ export default function PublicListing() {
               return (
                 <div
                   key={d}
-                  className={`flex justify-between items-center py-2.5 text-sm ${
-                    isToday
-                      ? "font-semibold text-gray-900"
-                      : "text-gray-600"
-                  }`}
+                  className={`flex justify-between items-center py-2.5 text-sm ${isToday
+                    ? "font-semibold text-gray-900"
+                    : "text-gray-600"
+                    }`}
                 >
                   <span className="flex items-center gap-2">
                     {isToday && (
