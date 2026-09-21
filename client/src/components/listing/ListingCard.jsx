@@ -21,10 +21,9 @@ export default function ListingCard({ listing, onDelete }) {
       className={`
         bg-white border rounded-2xl p-5 flex flex-col gap-4 transition-shadow
         hover:shadow-md
-        ${
-          listing.is_active
-            ? 'border-gray-200'
-            : 'border-gray-100 opacity-70'
+        ${listing.is_active
+          ? 'border-gray-200'
+          : 'border-gray-100 opacity-70'
         }
       `}
     >
@@ -52,10 +51,9 @@ export default function ListingCard({ listing, onDelete }) {
         <span
           className={`
             text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0
-            ${
-              listing.is_active
-                ? 'bg-green-100 text-green-700'
-                : 'bg-gray-100 text-gray-500'
+            ${listing.is_active
+              ? 'bg-green-100 text-green-700'
+              : 'bg-gray-100 text-gray-500'
             }
           `}
         >
@@ -72,6 +70,21 @@ export default function ListingCard({ listing, onDelete }) {
       <div className="flex items-center gap-4 text-xs text-gray-400">
         <span>👁 {listing.views_total || 0} views</span>
         <span>📞 {listing.phone}</span>
+      </div>
+      {/* Mini analytics strip */}
+      <div className="flex items-center gap-3 px-3 py-2 bg-gray-50
+                rounded-xl text-xs text-gray-500">
+        <span>👁 {listing.views_total || 0} views</span>
+        <span className="text-gray-300">·</span>
+        <span>📞 {listing.phone}</span>
+        <Link
+          to={`/analytics/${listing._id}`}
+          className="ml-auto text-saffron-600 font-medium hover:underline
+               flex-shrink-0"
+          onClick={(e) => e.stopPropagation()}
+        >
+          See analytics →
+        </Link>
       </div>
 
       {/* Actions */}
