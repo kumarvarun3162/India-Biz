@@ -1,11 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-saffron-50: #fff8f5;
+  /* ── Brand navy (from logo) ── */
+  --color-navy-50:  #f0f4fb;
+  --color-navy-100: #d9e3f4;
+  --color-navy-200: #b3c7e9;
+  --color-navy-500: #2d5ba3;
+  --color-navy-600: #1a3a6b;
+  --color-navy-700: #112747;
+
+  /* ── Brand orange (from logo) ── */
+  --color-brand-50:  #fff8f0;
+  --color-brand-100: #ffe8cc;
+  --color-brand-400: #fb923c;
+  --color-brand-500: #f97316;
+  --color-brand-600: #ea6a0a;
+
+  /* ── Green accent (from logo Biz text) ── */
+  --color-accent-500: #22a45d;
+  --color-accent-600: #1a8a4a;
+
+  /* ── Keep saffron for backward compat ── */
+  --color-saffron-50:  #fff8f5;
   --color-saffron-100: #ffe8d9;
-  --color-saffron-200: #ffcfb0;
-  --color-saffron-500: #e8622a;
-  --color-saffron-600: #b84d18;
+  --color-saffron-600: #B84D18;
   --color-saffron-700: #8f3b11;
 
   --font-sans: "Inter", system-ui, sans-serif;
@@ -14,5 +32,18 @@
 @layer base {
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
+  }
+
+  /* Minimum tap target size for mobile */
+  button, a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Remove tap highlight on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 }
