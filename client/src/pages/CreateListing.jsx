@@ -175,7 +175,7 @@ export default function CreateListing() {
               <div className={`
                 flex items-center gap-2 px-4 py-1.5 rounded-full text-sm
                 font-medium transition-all
-                ${current ? 'bg-saffron-600 text-white'
+                ${current ? 'bg-navy-600 text-white'
                   : done   ? 'bg-green-100 text-green-700'
                   :          'bg-gray-100 text-gray-400'}
               `}>
@@ -252,7 +252,7 @@ export default function CreateListing() {
                 className={`
                   w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900
                   placeholder:text-gray-400 outline-none resize-none transition-all
-                  focus:ring-2 focus:ring-saffron-600 focus:border-saffron-600
+                  focus:ring-2 focus:ring-navy-400 focus:border-saffron-600
                   ${errors.description
                     ? 'border-red-400 bg-red-50'
                     : 'border-gray-300 bg-white'}
@@ -382,7 +382,7 @@ export default function CreateListing() {
               type="button"
               onClick={goNext}
               className="px-6 py-2.5 text-sm font-medium text-white
-                         bg-saffron-600 rounded-xl hover:bg-saffron-700
+                         bg-navy-600 rounded-xl hover:bg-navy-700
                          transition-colors"
             >
               Continue →
@@ -392,8 +392,8 @@ export default function CreateListing() {
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="px-6 py-3 text-sm font-medium text-white bg-saffron-600
-                         rounded-xl hover:bg-saffron-700 disabled:opacity-60
+              className="px-6 py-3 text-sm font-medium text-white bg-navy-600
+                         rounded-xl hover:bg-navy-700 disabled:opacity-60
                          disabled:cursor-not-allowed transition-colors"
             >
               {isSubmitting ? 'Publishing…' : 'Publish listing ✓'}

@@ -72,6 +72,11 @@ export default function Register() {
 
         {/* Header */}
         <div className="text-center mb-8">
+          <img
+            src="/logo.png"
+            alt="India-Biz"
+            className="h-10 w-auto mx-auto mb-5"
+          />
           <h1 className="text-2xl font-semibold text-gray-900 mb-1">
             Create your account
           </h1>

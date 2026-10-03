@@ -141,7 +141,7 @@ export default function EditListing() {
                 onChange={set('description')}
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-300
                            text-sm text-gray-900 outline-none resize-none
-                           focus:ring-2 focus:ring-saffron-600
+                           focus:ring-2 focus:ring-navy-400
                            focus:border-saffron-600"
               />
             </div>
@@ -208,7 +208,7 @@ export default function EditListing() {
                   }
                 />
                 <div className="w-10 h-6 bg-gray-200 rounded-full
-                                peer-checked:bg-saffron-600 transition-colors" />
+                                peer-checked:bg-navy-600 transition-colors" />
                 <div className="absolute top-1 left-1 w-4 h-4 bg-white rounded-full
                                 shadow transition-transform
                                 peer-checked:translate-x-4" />
@@ -269,8 +269,8 @@ export default function EditListing() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-6 py-2.5 text-sm font-medium text-white bg-saffron-600
-                       rounded-xl hover:bg-saffron-700 disabled:opacity-60
+            className="px-6 py-2.5 text-sm font-medium text-white bg-navy-600
+                       rounded-xl hover:bg-navy-700 disabled:opacity-60
                        disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Saving…' : 'Save changes'}
