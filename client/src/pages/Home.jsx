@@ -161,7 +161,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-4 py-6">
           <div className="flex flex-col sm:flex-row items-center
                           justify-between gap-4">
-            <img src="/logo.png" alt="India-Biz" className="h-7 w-auto" />
+            <img src="/logo.png" alt="India-Biz" className="h-14 w-auto" />
             <p className="text-xs text-gray-400 text-center">
               Built by Varun Kumar · Kurukshetra University · 2026
             </p>

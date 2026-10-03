@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 
 const CATEGORY_ICONS = {
-  restaurant:'🍽️', grocery:'🛒', mechanic:'🔧',
-  salon:'✂️', medical:'💊', tailor:'🧵',
-  electronics:'📱', tutor:'📚', hardware:'🏗️', other:'🏪',
+  restaurant: '🍽️', grocery: '🛒', mechanic: '🔧',
+  salon: '✂️', medical: '💊', tailor: '🧵',
+  electronics: '📱', tutor: '📚', hardware: '🏗️', other: '🏪',
 }
 
 export default function ListingCard({ listing, onDelete }) {
